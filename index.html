@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prospero's Oracle</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #000;
+    color: #00ff41;
+    font-family: 'VT323', monospace;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  .title-block {
+    text-align: center;
+    border: 3px solid #00ff41;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .title-block::before, .title-block::after {
+    content: '✦ ✦ ✦';
+    display: block;
+    font-size: 14px;
+    color: #00cc33;
+    margin: 4px 0;
+  }
+  .game-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 15px;
+    color: #00ff41;
+    line-height: 1.8;
+    text-shadow: 0 0 8px #00ff41;
+    margin: 8px 0;
+  }
+  .subtitle { font-size: 20px; color: #00cc33; margin-top: 8px; }
+  .pixel-divider { text-align: center; color: #003300; font-size: 14px; letter-spacing: 4px; margin: 8px 0; }
+  .phase-block {
+    border: 2px solid #00ff41;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: opacity 0.3s;
+  }
+  .phase-block.locked { opacity: 0.35; pointer-events: none; }
+  .phase-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #ffff00;
+    background: #000;
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    padding: 0 6px;
+  }
+  .phase-question { font-size: 22px; color: #00ff41; margin-bottom: 16px; line-height: 1.3; }
+  .dice-area { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .dice-display {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: #ffff00;
+    background: #001a00;
+    border: 3px solid #00ff41;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 0 10px #ffff00;
+    flex-shrink: 0;
+  }
+  .dice-display.rolling { animation: flicker 0.08s infinite; color: #ff8800; text-shadow: 0 0 10px #ff8800; }
+  @keyframes flicker { 0%{opacity:1}50%{opacity:0.7}100%{opacity:1} }
+  .roll-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    background: #001a00;
+    color: #00ff41;
+    border: 2px solid #00ff41;
+    padding: 12px 16px;
+    cursor: pointer;
+    line-height: 1.6;
+    transition: all 0.1s;
+  }
+  .roll-btn:hover { background: #00ff41; color: #000; }
+  .roll-btn:active { transform: scale(0.96); }
+  .roll-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .result-text {
+    margin-top: 16px;
+    font-size: 20px;
+    color: #00ffcc;
+    line-height: 1.5;
+    border-left: 3px solid #00ffcc;
+    padding-left: 12px;
+    display: none;
+  }
+  .result-text.show { display: block; }
+  .result-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #ffff00;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .result-inner { display: flex; align-items: flex-start; gap: 14px; }
+  .result-desc { flex: 1; }
+  .info-toggle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #00aa44;
+    background: none;
+    border: 1px solid #00aa44;
+    padding: 4px 8px;
+    cursor: pointer;
+    margin-top: 8px;
+    display: inline-block;
+  }
+  .info-toggle:hover { background: #00aa44; color: #000; }
+  .info-expanded {
+    display: none;
+    margin-top: 10px;
+    font-size: 17px;
+    color: #888;
+    border-top: 1px dashed #003300;
+    padding-top: 10px;
+    line-height: 1.5;
+  }
+  .info-expanded.show { display: block; }
+  .reroll-notice {
+    font-size: 18px;
+    color: #ff8800;
+    margin-top: 10px;
+    display: none;
+    animation: blink 1s step-end infinite;
+  }
+  .reroll-notice.show { display: block; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+  .roll-count { font-size: 15px; color: #555; margin-top: 8px; }
+  .fortune-card {
+    border: 3px double #ffff00;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: none;
+    background: #000d00;
+  }
+  .fortune-card.show { display: block; }
+  .fortune-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: #ffff00;
+    text-align: center;
+    text-shadow: 0 0 8px #ffff00;
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+  .fortune-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed #003300;
+  }
+  .fortune-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .fortune-section-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .fortune-section-value { font-size: 20px; color: #00ff41; line-height: 1.5; }
+  .fortune-section-value .course-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #ffff00;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .fortune-inner { display: flex; align-items: flex-start; gap: 14px; }
+  .fortune-course-info {
+    margin-top: 10px;
+    font-size: 17px;
+    color: #00aa44;
+    border-top: 1px dashed #003300;
+    padding-top: 10px;
+    line-height: 1.6;
+  }
+  .fortune-course-info-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: #555;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .email-block { border: 2px solid #00cc33; padding: 20px; display: none; }
+  .email-block.show { display: block; }
+  .email-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #00ff41;
+    margin-bottom: 12px;
+    line-height: 1.8;
+  }
+  .email-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .email-input {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    background: #001a00;
+    color: #00ff41;
+    border: 2px solid #00ff41;
+    padding: 8px 12px;
+    flex: 1;
+    min-width: 200px;
+    outline: none;
+  }
+  .email-input:focus { border-color: #ffff00; color: #ffff00; }
+  .send-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    background: #001a00;
+    color: #00ff41;
+    border: 2px solid #00ff41;
+    padding: 10px 14px;
+    cursor: pointer;
+    line-height: 1.6;
+  }
+  .send-btn:hover { background: #00ff41; color: #000; }
+  .email-note { font-size: 15px; color: #555; margin-top: 10px; }
+  .reset-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    background: #000;
+    color: #ff4444;
+    border: 2px solid #ff4444;
+    padding: 12px 16px;
+    cursor: pointer;
+    display: none;
+    margin-top: 16px;
+    width: 100%;
+  }
+  .reset-btn.show { display: block; }
+  .reset-btn:hover { background: #ff4444; color: #000; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title-block">
+    <div class="game-title">PROSPERO'S ORACLE</div>
+    <div class="subtitle">◈ An Academic Fortune for the Aspiring Scholar ◈</div>
+    <div class="pixel-divider">▓░▓░▓░▓░▓░▓░▓░▓░▓░▓</div>
+    <div class="subtitle" style="font-size:17px; color:#00aa22; margin-top:6px;">
+      "We are such stuff as dreams are made on."<br>
+      Three rolls. One destiny. Your story begins here.
+    </div>
+  </div>
+
+  <div class="phase-block" id="phase1">
+    <span class="phase-label">ROLL 1 OF 3</span>
+    <div class="phase-question">⚔ Which course calls to you?</div>
+    <div class="dice-area">
+      <div class="dice-display" id="dice1">D20</div>
+      <div>
+        <button class="roll-btn" id="rollBtn1" onclick="rollDice(1)">[ ROLL THE DICE ]<br>► CAST YOUR FATE ◄</button>
+        <div class="roll-count" id="rollCount1"></div>
+      </div>
+    </div>
+    <div class="result-text" id="result1"></div>
+    <div class="reroll-notice" id="reroll1">★ FATE DEMANDS MORE — ROLL AGAIN BELOW! ★</div>
+  </div>
+
+  <div class="phase-block locked" id="phase2">
+    <span class="phase-label">ROLL 2 OF 3</span>
+    <div class="phase-question">✦ How will this course change you?</div>
+    <div class="dice-area">
+      <div class="dice-display" id="dice2">D20</div>
+      <div>
+        <button class="roll-btn" id="rollBtn2" onclick="rollDice(2)">[ ROLL THE DICE ]<br>► FIND YOUR TRUTH ◄</button>
+      </div>
+    </div>
+    <div class="result-text" id="result2"></div>
+  </div>
+
+  <div class="phase-block locked" id="phase3">
+    <span class="phase-label">ROLL 3 OF 3</span>
+    <div class="phase-question">✧ How will you change the world?</div>
+    <div class="dice-area">
+      <div class="dice-display" id="dice3">D20</div>
+      <div>
+        <button class="roll-btn" id="rollBtn3" onclick="rollDice(3)">[ ROLL THE DICE ]<br>► CLAIM YOUR POWER ◄</button>
+      </div>
+    </div>
+    <div class="result-text" id="result3"></div>
+  </div>
+
+  <div class="fortune-card" id="fortuneCard">
+    <div class="fortune-title">✦ ✦ ✦  PROSPERO SPEAKS  ✦ ✦ ✦<br>"We are such stuff as dreams are made on."</div>
+    <div id="fortuneSections"></div>
+  </div>
+
+  <div class="email-block" id="emailBlock">
+    <div class="email-label">► SEND YOUR FORTUNE TO YOUR INBOX ◄<br><span style="color:#555; font-size:13px; font-family:VT323,monospace;">Enter your email and we will dispatch Ariel with your prophecy.</span></div>
+    <div class="email-row">
+      <input class="email-input" type="email" id="emailInput" placeholder="your@email.com" />
+      <button class="send-btn" onclick="sendFortune()">[ SEND IT ]</button>
+    </div>
+    <div class="email-note" id="emailNote"></div>
+  </div>
+
+  <button class="reset-btn" id="resetBtn" onclick="resetGame()">[ ↺ CONSULT PROSPERO AGAIN ]</button>
+</div>
+
+<script>
+function makeIcon(svgContent) {
+  return '<svg class="pixel-icon" width="48" height="48" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;flex-shrink:0;">' + svgContent + '</svg>';
+}
+
+const icons = {
+  speechBubble: makeIcon('<rect x="2" y="3" width="12" height="8" rx="1" fill="#00ff41"/><polygon points="4,11 2,14 7,11" fill="#00ff41"/><rect x="4" y="5" width="2" height="2" fill="#000"/><rect x="7" y="5" width="2" height="2" fill="#000"/><rect x="10" y="5" width="2" height="2" fill="#000"/>'),
+  openBook: makeIcon('<rect x="1" y="4" width="6" height="9" fill="#00ff41"/><rect x="9" y="4" width="6" height="9" fill="#00ff41"/><rect x="7" y="4" width="2" height="9" fill="#ffff00"/><rect x="2" y="6" width="4" height="1" fill="#000"/><rect x="2" y="8" width="4" height="1" fill="#000"/><rect x="2" y="10" width="4" height="1" fill="#000"/><rect x="10" y="6" width="4" height="1" fill="#000"/><rect x="10" y="8" width="4" height="1" fill="#000"/><rect x="10" y="10" width="4" height="1" fill="#000"/>'),
+  camera: makeIcon('<rect x="2" y="5" width="12" height="8" rx="1" fill="#00ff41"/><circle cx="8" cy="9" r="2.5" fill="#000"/><circle cx="8" cy="9" r="1.5" fill="#00cc33"/><rect x="5" y="3" width="4" height="3" rx="1" fill="#00ff41"/><rect x="12" y="6" width="2" height="2" fill="#ffff00"/>'),
+  quill: makeIcon('<path d="M13 1 L3 13 L5 14 L6 11 Z" fill="#00ff41"/><path d="M13 1 L9 5 L11 7 L13 1Z" fill="#ffff00"/><rect x="3" y="12" width="1" height="3" fill="#00cc33"/>'),
+  lantern: makeIcon('<rect x="5" y="1" width="6" height="2" fill="#ffff00"/><rect x="4" y="3" width="8" height="9" rx="1" fill="#ffff00"/><rect x="5" y="4" width="6" height="7" fill="#ff8800"/><rect x="7" y="5" width="2" height="5" fill="#ffff00"/><rect x="3" y="12" width="10" height="2" fill="#ffff00"/><rect x="6" y="14" width="4" height="2" fill="#888"/>'),
+  castle: makeIcon('<rect x="1" y="8" width="14" height="7" fill="#00ff41"/><rect x="1" y="5" width="3" height="4" fill="#00ff41"/><rect x="6" y="5" width="4" height="4" fill="#00ff41"/><rect x="12" y="5" width="3" height="4" fill="#00ff41"/><rect x="2" y="4" width="1" height="2" fill="#000"/><rect x="4" y="4" width="1" height="2" fill="#000"/><rect x="7" y="4" width="1" height="2" fill="#000"/><rect x="9" y="4" width="1" height="2" fill="#000"/><rect x="13" y="4" width="1" height="2" fill="#000"/><rect x="6" y="10" width="4" height="5" fill="#000"/><rect x="4" y="10" width="3" height="3" fill="#000"/><rect x="9" y="10" width="3" height="3" fill="#000"/>'),
+  topHat: makeIcon('<rect x="4" y="2" width="8" height="9" fill="#00ff41"/><rect x="1" y="11" width="14" height="3" fill="#00ff41"/><rect x="5" y="3" width="6" height="1" fill="#ffff00"/>'),
+  globe: makeIcon('<circle cx="8" cy="8" r="6" fill="none" stroke="#00ff41" stroke-width="1.5"/><ellipse cx="8" cy="8" rx="3" ry="6" fill="none" stroke="#00ff41" stroke-width="1"/><line x1="2" y1="8" x2="14" y2="8" stroke="#00ff41" stroke-width="1"/><line x1="3" y1="5" x2="13" y2="5" stroke="#00ff41" stroke-width="0.8"/><line x1="3" y1="11" x2="13" y2="11" stroke="#00ff41" stroke-width="0.8"/>'),
+  compass: makeIcon('<circle cx="8" cy="8" r="6" fill="none" stroke="#00ff41" stroke-width="1.5"/><polygon points="8,3 9,8 8,7 7,8" fill="#ff4444"/><polygon points="8,13 9,8 8,9 7,8" fill="#00ff41"/><circle cx="8" cy="8" r="1" fill="#ffff00"/>'),
+  paperLantern: makeIcon('<ellipse cx="8" cy="8" rx="5" ry="6" fill="#ff8800"/><line x1="3" y1="8" x2="13" y2="8" stroke="#ffff00" stroke-width="0.8"/><line x1="4" y1="5" x2="12" y2="5" stroke="#ffff00" stroke-width="0.8"/><line x1="4" y1="11" x2="12" y2="11" stroke="#ffff00" stroke-width="0.8"/><rect x="7" y="1" width="2" height="2" fill="#888"/><rect x="7" y="13" width="2" height="3" fill="#888"/>'),
+  microphone: makeIcon('<rect x="6" y="1" width="4" height="7" rx="2" fill="#00ff41"/><path d="M4 7 Q4 12 8 12 Q12 12 12 7" fill="none" stroke="#00ff41" stroke-width="1.5"/><rect x="7" y="12" width="2" height="3" fill="#00ff41"/><rect x="4" y="15" width="8" height="1" fill="#00ff41"/>'),
+  scroll: makeIcon('<rect x="3" y="2" width="10" height="12" fill="#00ff41"/><rect x="1" y="2" width="3" height="12" rx="1" fill="#ffff00"/><rect x="12" y="2" width="3" height="12" rx="1" fill="#ffff00"/><rect x="5" y="5" width="6" height="1" fill="#000"/><rect x="5" y="7" width="6" height="1" fill="#000"/><rect x="5" y="9" width="4" height="1" fill="#000"/>'),
+  masks: makeIcon('<ellipse cx="5" cy="8" rx="4" ry="5" fill="#00ff41"/><ellipse cx="11" cy="8" rx="4" ry="5" fill="#ffff00"/><rect x="3" y="7" width="2" height="1" fill="#000"/><rect x="9" y="7" width="2" height="1" fill="#000"/><path d="M3 10 Q5 12 7 10" fill="none" stroke="#000" stroke-width="0.8"/><path d="M9 9 Q11 7 13 9" fill="none" stroke="#000" stroke-width="0.8"/>'),
+  magnifier: makeIcon('<circle cx="7" cy="7" r="4" fill="none" stroke="#00ff41" stroke-width="2"/><line x1="10" y1="10" x2="14" y2="14" stroke="#00ff41" stroke-width="2"/>'),
+  feather: makeIcon('<path d="M13 1 C13 1 2 6 3 13 L5 11 C5 11 4 8 8 6 L6 10 L8 9 C8 9 6 13 7 14 C8 10 14 2 13 1Z" fill="#00ff41"/>'),
+  pencil: makeIcon('<rect x="6" y="1" width="4" height="11" fill="#ffff00"/><polygon points="6,12 10,12 8,15" fill="#ff8800"/><rect x="6" y="1" width="4" height="2" fill="#888"/><rect x="7" y="3" width="2" height="1" fill="#ff8800"/>'),
+  sword: makeIcon('<rect x="7" y="1" width="2" height="10" fill="#00ff41"/><rect x="4" y="8" width="8" height="2" fill="#888"/><polygon points="7,11 9,11 8,15" fill="#ffff00"/><rect x="7" y="1" width="2" height="2" fill="#ffff00"/>'),
+  dice: makeIcon('<rect x="2" y="2" width="12" height="12" rx="2" fill="#ff8800"/><rect x="4" y="4" width="2" height="2" fill="#000"/><rect x="10" y="4" width="2" height="2" fill="#000"/><rect x="7" y="7" width="2" height="2" fill="#000"/><rect x="4" y="10" width="2" height="2" fill="#000"/><rect x="10" y="10" width="2" height="2" fill="#000"/>'),
+  heart: makeIcon('<polygon points="8,13 2,7 2,5 4,3 6,3 8,5 10,3 12,3 14,5 14,7" fill="#ff4444"/><rect x="7" y="12" width="2" height="2" fill="#ff4444"/>'),
+  novel: makeIcon('<rect x="2" y="2" width="9" height="12" fill="#00ff41"/><rect x="11" y="2" width="3" height="12" fill="#ffff00"/><rect x="4" y="4" width="5" height="1" fill="#000"/><rect x="4" y="6" width="5" height="1" fill="#000"/><rect x="4" y="8" width="3" height="1" fill="#000"/><rect x="12" y="4" width="1" height="8" fill="#ff8800"/>'),
+  roots: makeIcon('<rect x="7" y="1" width="2" height="6" fill="#00ff41"/><rect x="4" y="4" width="2" height="4" fill="#00cc33"/><rect x="10" y="4" width="2" height="4" fill="#00cc33"/><rect x="6" y="9" width="1" height="4" fill="#888"/><rect x="8" y="9" width="1" height="5" fill="#888"/><rect x="10" y="10" width="1" height="3" fill="#888"/><rect x="4" y="11" width="1" height="2" fill="#888"/>'),
+  trophy: makeIcon('<rect x="5" y="1" width="6" height="7" fill="#ffff00"/><rect x="3" y="2" width="2" height="4" fill="#ffff00"/><rect x="11" y="2" width="2" height="4" fill="#ffff00"/><rect x="6" y="8" width="4" height="3" fill="#ff8800"/><rect x="4" y="11" width="8" height="2" fill="#ffff00"/><rect x="3" y="13" width="10" height="2" fill="#888"/>'),
+  fist: makeIcon('<rect x="4" y="6" width="8" height="7" rx="1" fill="#00ff41"/><rect x="5" y="4" width="2" height="3" fill="#00ff41"/><rect x="7" y="3" width="2" height="3" fill="#00ff41"/><rect x="9" y="4" width="2" height="3" fill="#00ff41"/><rect x="3" y="7" width="2" height="4" fill="#00ff41"/>'),
+  brain: makeIcon('<ellipse cx="8" cy="7" rx="5" ry="5" fill="#ff8800"/><rect x="8" y="6" width="1" height="4" fill="#ff4444"/><rect x="5" y="5" width="1" height="3" fill="#ff4444"/><rect x="10" y="5" width="1" height="3" fill="#ff4444"/><rect x="6" y="12" width="4" height="3" fill="#ff8800"/>'),
+  paintbrush: makeIcon('<rect x="7" y="1" width="2" height="9" fill="#888"/><polygon points="6,9 10,9 8,13" fill="#00ffcc"/><rect x="6" y="1" width="4" height="2" fill="#ffff00"/>'),
+  film: makeIcon('<rect x="1" y="3" width="14" height="10" fill="#333"/><rect x="1" y="3" width="14" height="2" fill="#888"/><rect x="1" y="11" width="14" height="2" fill="#888"/><rect x="2" y="5" width="3" height="6" fill="#00ff41"/><rect x="6" y="5" width="4" height="6" fill="#00ffcc"/><rect x="11" y="5" width="3" height="6" fill="#ffff00"/>'),
+  lightbulb: makeIcon('<circle cx="8" cy="6" r="4" fill="#ffff00"/><rect x="6" y="10" width="4" height="2" fill="#888"/><rect x="7" y="12" width="2" height="2" fill="#ffff00"/><rect x="6" y="6" width="1" height="3" fill="#ff8800"/><rect x="9" y="6" width="1" height="3" fill="#ff8800"/>'),
+  people: makeIcon('<circle cx="5" cy="4" r="2" fill="#00ff41"/><rect x="3" y="6" width="4" height="5" fill="#00ff41"/><circle cx="11" cy="4" r="2" fill="#ffff00"/><rect x="9" y="6" width="4" height="5" fill="#ffff00"/><rect x="6" y="7" width="4" height="4" fill="#00ffcc"/>'),
+  megaphone: makeIcon('<rect x="2" y="6" width="4" height="5" fill="#00ff41"/><polygon points="6,5 14,2 14,13 6,11" fill="#00ff41"/><rect x="2" y="11" width="2" height="4" fill="#888"/><rect x="12" y="4" width="2" height="2" fill="#ffff00"/>'),
+  eye: makeIcon('<ellipse cx="8" cy="8" rx="6" ry="4" fill="none" stroke="#00ffcc" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="#00ffcc"/><circle cx="8" cy="8" r="1" fill="#000"/><circle cx="9" cy="7" r="0.5" fill="#fff"/>'),
+  torch: makeIcon('<rect x="7" y="7" width="2" height="8" fill="#888"/><rect x="6" y="5" width="4" height="4" fill="#ff8800"/><polygon points="6,5 10,5 8,1" fill="#ffff00"/><rect x="5" y="14" width="6" height="2" fill="#555"/>'),
+  star: makeIcon('<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" fill="#ffff00"/>'),
+  journal: makeIcon('<rect x="3" y="2" width="10" height="12" fill="#00cc33"/><rect x="3" y="2" width="2" height="12" fill="#009922"/><rect x="6" y="5" width="5" height="1" fill="#fff" opacity="0.5"/><rect x="6" y="7" width="5" height="1" fill="#fff" opacity="0.5"/><rect x="6" y="9" width="3" height="1" fill="#fff" opacity="0.5"/>'),
+  wrench: makeIcon('<rect x="7" y="1" width="3" height="10" fill="#888" transform="rotate(45 8 8)"/><circle cx="4" cy="4" r="2" fill="none" stroke="#888" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="#00ff41"/>'),
+  badge: makeIcon('<polygon points="8,1 10,4 14,4 11,7 12,11 8,9 4,11 5,7 2,4 6,4" fill="#ffff00"/><polygon points="8,3 9,5 12,5 10,7 11,10 8,8 5,10 6,7 4,5 7,5" fill="#ff8800"/>'),
+  graduate: makeIcon('<rect x="4" y="8" width="8" height="6" fill="#00ff41"/><polygon points="8,2 2,6 8,8 14,6" fill="#ffff00"/><rect x="12" y="6" width="2" height="5" fill="#888"/><rect x="11" y="11" width="3" height="2" fill="#ff4444"/>'),
+  zine: makeIcon('<rect x="2" y="2" width="12" height="12" fill="#ff8800"/><rect x="4" y="4" width="8" height="1" fill="#000"/><rect x="4" y="6" width="8" height="1" fill="#000"/><rect x="4" y="8" width="5" height="1" fill="#000"/><rect x="8" y="10" width="4" height="4" fill="#ffff00"/><rect x="9" y="11" width="2" height="2" fill="#ff8800"/>'),
+  viral: makeIcon('<circle cx="8" cy="8" r="2" fill="#ff4444"/><circle cx="3" cy="4" r="1.5" fill="#ff8800"/><circle cx="13" cy="4" r="1.5" fill="#ff8800"/><circle cx="3" cy="12" r="1.5" fill="#ff8800"/><circle cx="13" cy="12" r="1.5" fill="#ff8800"/><line x1="8" y1="8" x2="3" y2="4" stroke="#ff4444" stroke-width="1"/><line x1="8" y1="8" x2="13" y2="4" stroke="#ff4444" stroke-width="1"/><line x1="8" y1="8" x2="3" y2="12" stroke="#ff4444" stroke-width="1"/><line x1="8" y1="8" x2="13" y2="12" stroke="#ff4444" stroke-width="1"/>'),
+  filmReel: makeIcon('<circle cx="8" cy="8" r="6" fill="none" stroke="#00ff41" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="#00ff41"/><circle cx="8" cy="3" r="1" fill="#00ff41"/><circle cx="8" cy="13" r="1" fill="#00ff41"/><circle cx="3" cy="8" r="1" fill="#00ff41"/><circle cx="13" cy="8" r="1" fill="#00ff41"/>'),
+  bookClub: makeIcon('<rect x="1" y="5" width="5" height="7" fill="#00ff41"/><rect x="6" y="4" width="5" height="8" fill="#ffff00"/><rect x="11" y="5" width="5" height="7" fill="#00ffcc"/><rect x="2" y="7" width="3" height="1" fill="#000"/><rect x="7" y="6" width="3" height="1" fill="#000"/><rect x="12" y="7" width="3" height="1" fill="#000"/>'),
+  openMic: makeIcon('<rect x="7" y="1" width="2" height="6" rx="1" fill="#00ff41"/><path d="M5 5 Q5 10 8 10 Q11 10 11 5" fill="none" stroke="#00ff41" stroke-width="1.5"/><rect x="7" y="10" width="2" height="3" fill="#00ff41"/><rect x="4" y="13" width="8" height="1" fill="#00ff41"/><circle cx="8" cy="15" r="1" fill="#ffff00"/>'),
+  newspaper: makeIcon('<rect x="1" y="2" width="14" height="12" fill="#00ff41"/><rect x="2" y="3" width="8" height="4" fill="#000"/><rect x="2" y="8" width="12" height="1" fill="#000"/><rect x="2" y="10" width="12" height="1" fill="#000"/><rect x="2" y="12" width="8" height="1" fill="#000"/><rect x="11" y="3" width="3" height="4" fill="#000"/>'),
+  wifi: makeIcon('<path d="M2 9 Q8 3 14 9" fill="none" stroke="#00ff41" stroke-width="1.5"/><path d="M4 11 Q8 6 12 11" fill="none" stroke="#00ff41" stroke-width="1.5"/><path d="M6 13 Q8 10 10 13" fill="none" stroke="#00ff41" stroke-width="1.5"/><circle cx="8" cy="14" r="1.5" fill="#00ff41"/>'),
+  award: makeIcon('<circle cx="8" cy="6" r="5" fill="none" stroke="#ffff00" stroke-width="1.5"/><polygon points="8,3 9,5.5 12,5.5 10,7 11,9.5 8,8 5,9.5 6,7 4,5.5 7,5.5" fill="#ffff00"/><rect x="6" y="11" width="4" height="2" fill="#ffff00"/><rect x="4" y="13" width="8" height="2" fill="#888"/>'),
+  mentalHealth: makeIcon('<path d="M8 13 L3 8 Q1 5 4 3 Q6 2 8 5 Q10 2 12 3 Q15 5 13 8 Z" fill="#ff8800"/><rect x="7" y="5" width="2" height="5" fill="#fff" opacity="0.5"/><rect x="5" y="7" width="6" height="2" fill="#fff" opacity="0.5"/>'),
+  documentary: makeIcon('<rect x="1" y="4" width="10" height="8" fill="#333"/><polygon points="11,4 15,8 11,12" fill="#00ff41"/><rect x="2" y="6" width="4" height="4" fill="#00ffcc"/><rect x="7" y="6" width="3" height="2" fill="#888"/><rect x="7" y="9" width="3" height="1" fill="#888"/>'),
+  youngPeople: makeIcon('<circle cx="5" cy="4" r="2" fill="#00ff41"/><rect x="3" y="6" width="4" height="5" fill="#00ff41"/><circle cx="11" cy="5" r="1.5" fill="#ffff00"/><rect x="9" y="7" width="3" height="4" fill="#ffff00"/><rect x="5" y="9" width="7" height="1" fill="#00ffcc"/>'),
+  nonprofit: makeIcon('<polygon points="8,1 15,7 15,15 1,15 1,7" fill="none" stroke="#00ff41" stroke-width="1.5"/><rect x="6" y="10" width="4" height="5" fill="#00ff41"/><rect x="3" y="8" width="4" height="4" fill="#00ffcc"/><rect x="9" y="8" width="4" height="4" fill="#ffff00"/>'),
+  mentor: makeIcon('<circle cx="5" cy="4" r="2" fill="#ffff00"/><rect x="3" y="6" width="4" height="5" fill="#ffff00"/><circle cx="11" cy="6" r="2" fill="#00ff41"/><rect x="9" y="8" width="4" height="5" fill="#00ff41"/><line x1="7" y1="8" x2="9" y2="9" stroke="#fff" stroke-width="1"/>'),
+  classroomStar: makeIcon('<rect x="1" y="3" width="14" height="10" fill="#333"/><rect x="2" y="4" width="12" height="8" fill="#000"/><polygon points="8,5 9,7.5 12,7.5 10,9 11,11.5 8,10 5,11.5 6,9 4,7.5 7,7.5" fill="#ffff00"/>'),
+  podcast: makeIcon('<circle cx="8" cy="6" r="4" fill="none" stroke="#00ffcc" stroke-width="1.5"/><rect x="7" y="2" width="2" height="4" fill="#00ffcc"/><rect x="5" y="10" width="6" height="2" fill="#00ffcc"/><rect x="4" y="12" width="8" height="1" fill="#888"/><rect x="3" y="13" width="2" height="3" fill="#888"/><rect x="11" y="13" width="2" height="3" fill="#888"/>'),
+  mirror: makeIcon('<rect x="4" y="1" width="8" height="10" rx="1" fill="none" stroke="#00ffcc" stroke-width="1.5"/><rect x="6" y="3" width="4" height="6" fill="#001a22"/><rect x="7" y="11" width="2" height="3" fill="#888"/><rect x="5" y="14" width="6" height="2" fill="#555"/>'),
+  comfort: makeIcon('<path d="M3 8 Q3 4 8 4 Q13 4 13 8 Q13 13 8 14 Q3 13 3 8Z" fill="#00ff41" opacity="0.3"/><rect x="5" y="7" width="6" height="1" fill="#00ff41"/><rect x="6" y="9" width="4" height="1" fill="#00ff41"/><circle cx="8" cy="6" r="1" fill="#ffff00"/>'),
+  justice: makeIcon('<rect x="7" y="1" width="2" height="3" fill="#888"/><rect x="3" y="4" width="10" height="1" fill="#888"/><rect x="3" y="5" width="4" height="3" fill="#ffff00" opacity="0.8"/><rect x="9" y="5" width="4" height="3" fill="#ffff00" opacity="0.8"/><rect x="7" y="5" width="2" height="9" fill="#888"/><rect x="4" y="13" width="8" height="2" fill="#555"/>'),
+  superpower: makeIcon('<polygon points="8,1 10,6 16,6 11,9 13,15 8,11 3,15 5,9 0,6 6,6" fill="#ffff00"/><polygon points="8,3 10,7 14,7 11,9.5 12.5,13 8,10.5 3.5,13 5,9.5 2,7 6,7" fill="#ff8800"/>')
+};
+
+// ============================================================
+// COURSE DATA — edit the "info" field for each course below.
+// This text appears in the final fortune card automatically.
+// ============================================================
+const courses = [
+  { name: "English 202", title: "Intro to Linguistics", desc: "Unlock the hidden structures of language and how they shape the way we think.", info: "Add course details here: units, transfer info, when it's offered, a note from the professor — anything you'd like students to know.", icon: icons.speechBubble },
+  { name: "English C1002", title: "Introduction to Literature", desc: "From ancient myths to modern masterpieces, discover the stories that define humanity.", info: "Add course details here.", icon: icons.openBook },
+  { name: "English 209", title: "Literary Approaches to Film", desc: "Watch movies in a whole new way — analyzing symbolism, storytelling, and cultural impact.", info: "Add course details here.", icon: icons.camera },
+  { name: "English 210", title: "American Literature I", desc: "Dive into the voices of early America: Wheatley, Occom, Douglass, Hawthorne, Poe, and more.", info: "Add course details here.", icon: icons.quill },
+  { name: "English 211", title: "American Literature II", desc: "Explore the evolution of American storytelling with Hurston, Baldwin, Erdrich, Ellison, Zitkala-Sa, and more.", info: "Add course details here.", icon: icons.lantern },
+  { name: "English 215", title: "English Literature I (800-1799)", desc: "Journey through medieval epics, Renaissance poetry, and Enlightenment philosophy with Chaucer, Milton, Equiano, and more.", info: "Add course details here.", icon: icons.castle },
+  { name: "English 216", title: "English Literature II (1800-Present)", desc: "Trace the shifting landscapes of modern thought through Austen, Wilde, Woolf, Zadie Smith, and more.", info: "Add course details here.", icon: icons.topHat },
+  { name: "English 220", title: "Masterpieces of World Literature I", desc: "Read timeless works from across civilizations — from The Epic of Gilgamesh to The Tale of Genji and Sundiata.", info: "Add course details here.", icon: icons.globe },
+  { name: "English 221", title: "Masterpieces of World Literature II", desc: "Encounter world-changing voices: Sor Juana, Tagore, Garcia Marquez, Achebe, Arundhati Roy, and more.", info: "Add course details here.", icon: icons.compass },
+  { name: "English 230", title: "Asian American Literature", desc: "Explore the struggles and triumphs of Asian American voices, from Maxine Hong Kingston to Viet Thanh Nguyen.", info: "Add course details here.", icon: icons.paperLantern },
+  { name: "English 234", title: "Hip Hop Literature: A Poetry Class", desc: "Break down the lyrical genius of Tupac, Kendrick Lamar, Lauryn Hill, and more while writing your own poetic truths.", info: "Add course details here.", icon: icons.microphone },
+  { name: "English 237", title: "Women in Literature", desc: "Read game-changing works by Wollstonecraft, Toni Morrison, Cisneros, Audre Lorde, bell hooks, and more.", info: "Add course details here.", icon: icons.scroll },
+  { name: "English 240", title: "Shakespeare — STUDY ABROAD 2027", desc: "To take or not to take? Explore the Bard's timeless themes of ambition, betrayal, love, and power. Study abroad in London Summer 2027!", info: "Add course details here.", icon: icons.masks },
+  { name: "English 245A/B", title: "Writing Creative Nonfiction", desc: "Learn to tell true stories with style, from memoirs to investigative essays.", info: "Add course details here.", icon: icons.magnifier },
+  { name: "English 247A/B", title: "Writing Seminar: Poetry", desc: "Play with language, rhythm, and metaphor to find your poetic voice.", info: "Add course details here.", icon: icons.feather },
+  { name: "English 249A/B", title: "Introduction to Creative Writing", desc: "Craft compelling stories, poems, and personal reflections while experimenting with different genres.", info: "Add course details here.", icon: icons.pencil },
+  { name: "English 252A/B", title: "Fundamentals of Fiction Writing", desc: "Learn to build unforgettable characters, immersive worlds, and gripping narratives.", info: "Add course details here.", icon: icons.sword },
+  { special: true, text: "Roll twice more! You're taking two courses — expand your horizons!", icon: icons.dice },
+  { special: true, text: "Roll twice more! You're taking two courses — challenge yourself!", icon: icons.dice },
+  { special: true, text: "Roll three times! You're diving deep into literature and writing — this is your year!", icon: icons.dice }
+];
+
+const changes = [
+  { desc: "You finally find a genre of literature that speaks to your soul — you didn't know books could feel this personal.", icon: icons.heart },
+  { desc: "You develop a love for storytelling and decide to write your own novel, short stories, or poetry.", icon: icons.novel },
+  { desc: "You gain a deeper understanding of your own cultural heritage and how storytelling shapes identity.", icon: icons.roots },
+  { desc: "You build confidence in your writing and start submitting work to contests, magazines, or open mics.", icon: icons.trophy },
+  { desc: "You recognize historical patterns of injustice and feel empowered to challenge the status quo in your community.", icon: icons.fist },
+  { desc: "You become more aware of how language shapes power and identity, making you a more critical thinker.", icon: icons.brain },
+  { desc: "You develop a new appreciation for the artistry behind words, from lyrical poetry to everyday conversations.", icon: icons.paintbrush },
+  { desc: "You start analyzing movies, music, and pop culture through a literary lens — and realize stories are everywhere.", icon: icons.film },
+  { desc: "You find unexpected connections between literature and your other interests, whether it's psychology, politics, or even science.", icon: icons.lightbulb },
+  { desc: "You write a personal essay that makes your professor cry (in a good way).", icon: icons.feather },
+  { desc: "You connect with classmates from different backgrounds and hear perspectives that shift your worldview.", icon: icons.people },
+  { desc: "You gain the skills to tell your own story — whether it's through spoken word, memoir, or social media.", icon: icons.megaphone },
+  { desc: "You start noticing and appreciating the beauty of well-crafted sentences, even in everyday writing.", icon: icons.eye },
+  { desc: "You find inspiration in literature that encourages activism and begin advocating for a cause you care about.", icon: icons.torch },
+  { desc: "You improve your academic writing skills so much that essays in other classes suddenly feel easy.", icon: icons.star },
+  { desc: "You start journaling daily and find it helps you process your thoughts and emotions in a new way.", icon: icons.journal },
+  { desc: "You realize that writing is more than just an assignment — it's a tool for self-expression, persuasion, and change.", icon: icons.wrench },
+  { desc: "You develop a passion for teaching and mentoring others in reading and writing.", icon: icons.mentor },
+  { desc: "You get published in the school's literary magazine and realize your words can have a real audience.", icon: icons.badge },
+  { desc: "You meet a professor who inspires you, and it changes the way you think about your future.", icon: icons.graduate }
+];
+
+const impacts = [
+  { desc: "Your short story gets published in a local zine, and strangers tell you it moved them.", icon: icons.zine },
+  { desc: "Your essay on systemic inequality sparks a campus-wide discussion.", icon: icons.megaphone },
+  { desc: "You write a poem that goes viral in your community for its powerful message.", icon: icons.viral },
+  { desc: "Your deep analysis of a film changes how your friends and family see their favorite movies.", icon: icons.filmReel },
+  { desc: "You start a book club that brings together people from different backgrounds.", icon: icons.bookClub },
+  { desc: "Your spoken word performance at an open mic night leaves the audience speechless.", icon: icons.openMic },
+  { desc: "You write an op-ed that gets published in a local newspaper, influencing public opinion.", icon: icons.newspaper },
+  { desc: "Your blog or social media posts on literature gain a following and encourage more people to read.", icon: icons.wifi },
+  { desc: "A professor nominates your paper for an academic award, and you realize your ideas can change the world.", icon: icons.award },
+  { desc: "Your fiction writing explores mental health in a way that resonates deeply with readers.", icon: icons.mentalHealth },
+  { desc: "You create a documentary-style project blending writing, music, and visuals that tells an untold story.", icon: icons.documentary },
+  { desc: "Your writing helps younger students feel seen, represented, and inspired.", icon: icons.youngPeople },
+  { desc: "You use your storytelling skills in a nonprofit or activist space to advocate for change.", icon: icons.nonprofit },
+  { desc: "You become a mentor to other students, helping them develop their writing and voice.", icon: icons.mentor },
+  { desc: "You write something so powerful that a teacher asks to use it in future classes.", icon: icons.classroomStar },
+  { desc: "You turn a research paper into a podcast or video project that gains attention.", icon: icons.podcast },
+  { desc: "You challenge stereotypes through your work and help shift perspectives in your community.", icon: icons.mirror },
+  { desc: "Your words provide comfort to someone who needed to hear them.", icon: icons.comfort },
+  { desc: "You push back against outdated ideas and contribute to the growing conversation about justice, art, and identity.", icon: icons.justice },
+  { desc: "You realize that writing is your superpower — and you're just getting started.", icon: icons.superpower }
+];
+
+let state = { courseRolls: [], changeResult: null, impactResult: null, rolling: false };
+
+function rollDice(phase) {
+  if (state.rolling) return;
+  state.rolling = true;
+  const diceEl = document.getElementById('dice' + phase);
+  const btnEl = document.getElementById('rollBtn' + phase);
+  btnEl.disabled = true;
+  diceEl.classList.add('rolling');
+  let ticks = 0;
+  const interval = setInterval(() => {
+    diceEl.textContent = Math.floor(Math.random() * 20) + 1;
+    ticks++;
+    if (ticks >= 22) {
+      clearInterval(interval);
+      const final = Math.floor(Math.random() * 20) + 1;
+      diceEl.textContent = final;
+      diceEl.classList.remove('rolling');
+      state.rolling = false;
+      handleResult(phase, final);
+    }
+  }, 60);
+}
+
+function handleResult(phase, roll) {
+  if (phase === 1) handleCourseRoll(roll);
+  else if (phase === 2) {
+    state.changeResult = changes[roll - 1];
+    const el = document.getElementById('result2');
+    el.innerHTML = '<div class="result-inner">' + state.changeResult.icon + '<div class="result-desc">' + state.changeResult.desc + '</div></div>';
+    el.classList.add('show');
+    unlockPhase(3);
+  } else {
+    state.impactResult = impacts[roll - 1];
+    const el = document.getElementById('result3');
+    el.innerHTML = '<div class="result-inner">' + state.impactResult.icon + '<div class="result-desc">' + state.impactResult.desc + '</div></div>';
+    el.classList.add('show');
+    revealFortune();
+  }
+}
+
+function handleCourseRoll(roll) {
+  const course = courses[roll - 1];
+  state.courseRolls.push({ roll, course });
+  const countEl = document.getElementById('rollCount1');
+  const rerollEl = document.getElementById('reroll1');
+  const resultEl = document.getElementById('result1');
+
+  if (course.special) {
+    const extraRolls = roll === 20 ? 3 : 2;
+    resultEl.innerHTML = '<div class="result-inner">' + course.icon + '<div class="result-desc"><span class="result-name">► ' + roll + ' — FATE INTERVENES!</span>' + course.text + '</div></div>';
+    resultEl.classList.add('show');
+    rerollEl.classList.add('show');
+    countEl.textContent = 'Roll ' + state.courseRolls.length + ' of ' + (extraRolls + 1) + ' required...';
+    document.getElementById('rollBtn1').disabled = false;
+  } else {
+    const realCourses = state.courseRolls.filter(r => !r.course.special);
+    const infoId = 'info_roll_' + state.courseRolls.length;
+    let courseHtml = '<div style="margin-top:' + (realCourses.length > 1 ? '14px' : '0') + '">';
+    if (realCourses.length > 1) courseHtml += '<span style="color:#ffff00;font-size:14px;font-family:\'Press Start 2P\',monospace;display:block;margin-bottom:6px;">+ COURSE ' + realCourses.length + ':</span>';
+    courseHtml += '<div class="result-inner">' + course.icon + '<div class="result-desc">';
+    courseHtml += '<span class="result-name">► ' + roll + ' — ' + course.name + ': ' + course.title + '</span>';
+    courseHtml += course.desc;
+    courseHtml += '<br><button class="info-toggle" onclick="toggleInfo(\'' + infoId + '\')">► MORE INFO</button>';
+    courseHtml += '<div class="info-expanded" id="' + infoId + '">' + course.info + '</div>';
+    courseHtml += '</div></div></div>';
+
+    if (realCourses.length === 1 && !state.courseRolls.some(r => r.course.special)) {
+      resultEl.innerHTML = courseHtml;
+    } else {
+      resultEl.innerHTML += courseHtml;
+    }
+    resultEl.classList.add('show');
+
+    const needsMore = state.courseRolls.some(r => r.course.special) &&
+      realCourses.length < (state.courseRolls.find(r => r.course.special && r.roll === 20) ? 3 : 2);
+
+    if (!needsMore) {
+      rerollEl.classList.remove('show');
+      countEl.textContent = '';
+      unlockPhase(2);
+    } else {
+      countEl.textContent = 'Keep rolling — more courses await!';
+      document.getElementById('rollBtn1').disabled = false;
+    }
+  }
+}
+
+function toggleInfo(id) {
+  const el = document.getElementById(id);
+  const btn = el.previousElementSibling;
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+    btn.textContent = '► MORE INFO';
+  } else {
+    el.classList.add('show');
+    btn.textContent = '▼ LESS INFO';
+  }
+}
+
+function unlockPhase(phase) {
+  const el = document.getElementById('phase' + phase);
+  el.classList.remove('locked');
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function revealFortune() {
+  const card = document.getElementById('fortuneCard');
+  const sections = document.getElementById('fortuneSections');
+  let html = '';
+
+  const realCourses = state.courseRolls.filter(r => !r.course.special);
+  realCourses.forEach((r, i) => {
+    html += '<div class="fortune-section">';
+    html += '<div class="fortune-section-label">' + (realCourses.length > 1 ? 'YOUR COURSE ' + (i + 1) : 'YOUR COURSE') + '</div>';
+    html += '<div class="fortune-inner">' + r.course.icon;
+    html += '<div class="fortune-section-value">';
+    html += '<span class="course-tag">► ' + r.course.name + ': ' + r.course.title + '</span>';
+    html += r.course.desc;
+    html += '<div class="fortune-course-info"><span class="fortune-course-info-label">► COURSE DETAILS</span>' + r.course.info + '</div>';
+    html += '</div></div></div>';
+  });
+
+  html += '<div class="fortune-section"><div class="fortune-section-label">HOW YOU WILL CHANGE</div>';
+  html += '<div class="fortune-inner">' + state.changeResult.icon + '<div class="fortune-section-value">' + state.changeResult.desc + '</div></div></div>';
+
+  html += '<div class="fortune-section"><div class="fortune-section-label">HOW YOU WILL CHANGE THE WORLD</div>';
+  html += '<div class="fortune-inner">' + state.impactResult.icon + '<div class="fortune-section-value">' + state.impactResult.desc + '</div></div>';
+
+  sections.innerHTML = html;
+  card.classList.add('show');
+  document.getElementById('emailBlock').classList.add('show');
+  document.getElementById('resetBtn').classList.add('show');
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function sendFortune() {
+  const email = document.getElementById('emailInput').value.trim();
+  const note = document.getElementById('emailNote');
+  if (!email || !email.includes('@')) {
+    note.style.color = '#ff4444';
+    note.textContent = '► Please enter a valid email address.';
+    return;
+  }
+
+  const realCourses = state.courseRolls.filter(r => !r.course.special);
+  const courseLines = realCourses.map(r => r.course.name + ': ' + r.course.title + ' — ' + r.course.desc + ' | Details: ' + r.course.info).join('\n');
+  const changeLine = state.changeResult ? state.changeResult.desc : '';
+  const impactLine = state.impactResult ? state.impactResult.desc : '';
+
+  const message =
+    'YOUR COURSE(S):\n' + courseLines +
+    '\n\nHOW YOU WILL CHANGE:\n' + changeLine +
+    '\n\nHOW YOU WILL CHANGE THE WORLD:\n' + impactLine;
+
+  note.style.color = '#ffff00';
+  note.textContent = '► Dispatching Ariel...';
+  document.querySelector('.send-btn').disabled = true;
+
+  try {
+    const response = await fetch('https://formspree.io/f/xgoqdzqa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, message: message, _replyto: email, _subject: "Prospero's Oracle — Your Academic Fortune" })
+    });
+    if (response.ok) {
+      note.style.color = '#00ff41';
+      note.textContent = '► Ariel has been dispatched. Your fortune will arrive shortly. ✦';
+    } else {
+      throw new Error('Failed');
+    }
+  } catch (e) {
+    note.style.color = '#ff4444';
+    note.textContent = '► The spirits are restless. Please try again.';
+    document.querySelector('.send-btn').disabled = false;
+  }
+}
+
+function resetGame() {
+  state = { courseRolls: [], changeResult: null, impactResult: null, rolling: false };
+  [1, 2, 3].forEach(i => {
+    document.getElementById('dice' + i).textContent = 'D20';
+    document.getElementById('result' + i).classList.remove('show');
+    document.getElementById('result' + i).innerHTML = '';
+    document.getElementById('rollBtn' + i).disabled = false;
+  });
+  document.getElementById('reroll1').classList.remove('show');
+  document.getElementById('rollCount1').textContent = '';
+  document.getElementById('phase2').classList.add('locked');
+  document.getElementById('phase3').classList.add('locked');
+  document.getElementById('fortuneCard').classList.remove('show');
+  document.getElementById('emailBlock').classList.remove('show');
+  document.getElementById('resetBtn').classList.remove('show');
+  document.getElementById('emailInput').value = '';
+  document.getElementById('emailNote').textContent = '';
+  document.querySelector('.send-btn').disabled = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

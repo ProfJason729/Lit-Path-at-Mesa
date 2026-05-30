@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospero's Oracle</title>
+<title>Get Lit with English at Mesa</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -256,10 +256,11 @@
 <div class="container">
   <div class="title-block">
     <div class="game-title">PROSPERO'S ORACLE</div>
-    <div class="subtitle">◈ An Academic Fortune for the Mesa College Scholar ◈</div>
+    <div class="subtitle">◈ Throw the dice and watch your future unfold! ◈</div>
     <div class="pixel-divider">▓░▓░▓░▓░▓░▓░▓░▓░▓░▓</div>
     <div class="subtitle" style="font-size:17px; color:#00aa22; margin-top:6px;">
-      "We are such stuff as dreams are made on."<br>
+      "“There is no greater agony than bearing an untold story inside of you.”\n- Zora Neale Hurston
+"<br>
       Three rolls. One destiny. Your story begins here.
     </div>
   </div>
@@ -622,7 +623,7 @@ async function sendFortune() {
     });
     if (response.ok) {
       note.style.color = '#00ff41';
-      note.textContent = '► Ariel has been dispatched. Your fortune will arrive shortly. ✦';
+      note.textContent = '► Your fortune will arrive shortly.\n"Definitions belong to the definers, not the defined."\nToni Morrison\nCheck your email, define your future, define your world! ✦';
     } else {
       throw new Error('Failed');
     }

@@ -309,7 +309,7 @@
   </div>
 
   <div class="email-block" id="emailBlock">
-    <div class="email-label">► SEND YOUR FORTUNE TO YOUR INBOX ◄<br><span style="color:#555; font-size:13px; font-family:VT323,monospace;">Enter your email and we will dispatch Ariel with your prophecy.</span></div>
+    <div class="email-label">► SEND YOUR FORTUNE TO YOUR INBOX ◄<br><span style="color:#555; font-size:13px; font-family:VT323,monospace;">Enter your email and we will dispatch your prophecy.</span></div>
     <div class="email-row">
       <input class="email-input" type="email" id="emailInput" placeholder="your@email.com" />
       <button class="send-btn" onclick="sendFortune()">[ SEND IT ]</button>
@@ -317,7 +317,7 @@
     <div class="email-note" id="emailNote"></div>
   </div>
 
-  <button class="reset-btn" id="resetBtn" onclick="resetGame()">[ ↺ CONSULT PROSPERO AGAIN ]</button>
+  <button class="reset-btn" id="resetBtn" onclick="resetGame()">[ ↺ Discover another path / Click here ]</button>
 </div>
 
 <script>
@@ -623,7 +623,7 @@ async function sendFortune() {
     });
     if (response.ok) {
       note.style.color = '#00ff41';
-      note.textContent = '► Your fortune will arrive shortly.\n"Definitions belong to the definers, not the defined."\nToni Morrison\nCheck your email, define your future, define your world! ✦';
+      note.textContent = '► "Definitions belong to the definers, not the defined." -Toni Morrison Check your email, define your future, define your world! ✦';
     } else {
       throw new Error('Failed');
     }

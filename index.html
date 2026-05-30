@@ -25,10 +25,12 @@
     z-index: 9999;
   }
   .container { max-width: 720px; margin: 0 auto; }
+
+  /* TITLE BLOCK */
   .title-block {
     text-align: center;
     border: 3px solid #00ff41;
-    padding: 20px;
+    padding: 24px 20px;
     margin-bottom: 24px;
   }
   .title-block::before, .title-block::after {
@@ -40,14 +42,34 @@
   }
   .game-title {
     font-family: 'Press Start 2P', monospace;
-    font-size: 15px;
+    font-size: 13px;
+    color: #ffff00;
+    line-height: 1.8;
+    text-shadow: 0 0 10px #ffff00;
+    margin: 10px 0 6px;
+  }
+  .game-subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
     color: #00ff41;
     line-height: 1.8;
-    text-shadow: 0 0 8px #00ff41;
-    margin: 8px 0;
+    margin-bottom: 12px;
   }
-  .subtitle { font-size: 20px; color: #00cc33; margin-top: 8px; }
-  .pixel-divider { text-align: center; color: #003300; font-size: 14px; letter-spacing: 4px; margin: 8px 0; }
+  .pixel-divider { text-align: center; color: #003300; font-size: 14px; letter-spacing: 4px; margin: 10px 0; }
+  .opening-quote {
+    font-size: 19px;
+    color: #00cc33;
+    font-style: italic;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  .opening-quote-attr {
+    font-size: 15px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* PHASE BLOCKS */
   .phase-block {
     border: 2px solid #00ff41;
     padding: 20px;
@@ -67,23 +89,34 @@
     padding: 0 6px;
   }
   .phase-question { font-size: 22px; color: #00ff41; margin-bottom: 16px; line-height: 1.3; }
+
+  /* DICE AREA */
   .dice-area { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-  .dice-display {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 28px;
-    color: #ffff00;
-    background: #001a00;
-    border: 3px solid #00ff41;
+
+  /* D20 SVG CANVAS */
+  .d20-container {
     width: 80px;
     height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0 0 10px #ffff00;
     flex-shrink: 0;
+    position: relative;
   }
-  .dice-display.rolling { animation: flicker 0.08s infinite; color: #ff8800; text-shadow: 0 0 10px #ff8800; }
-  @keyframes flicker { 0%{opacity:1}50%{opacity:0.7}100%{opacity:1} }
+  .d20-canvas {
+    width: 80px;
+    height: 80px;
+  }
+  .d20-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    color: #ffff00;
+    text-shadow: 0 0 6px #ffff00;
+    pointer-events: none;
+    transition: opacity 0.1s;
+  }
+
   .roll-btn {
     font-family: 'Press Start 2P', monospace;
     font-size: 10px;
@@ -98,6 +131,9 @@
   .roll-btn:hover { background: #00ff41; color: #000; }
   .roll-btn:active { transform: scale(0.96); }
   .roll-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .roll-count { font-size: 15px; color: #555; margin-top: 8px; }
+
+  /* RESULTS */
   .result-text {
     margin-top: 16px;
     font-size: 20px;
@@ -136,9 +172,11 @@
     color: #888;
     border-top: 1px dashed #003300;
     padding-top: 10px;
-    line-height: 1.5;
+    line-height: 1.6;
+    white-space: pre-line;
   }
   .info-expanded.show { display: block; }
+
   .reroll-notice {
     font-size: 18px;
     color: #ff8800;
@@ -148,7 +186,8 @@
   }
   .reroll-notice.show { display: block; }
   @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
-  .roll-count { font-size: 15px; color: #555; margin-top: 8px; }
+
+  /* FORTUNE CARD */
   .fortune-card {
     border: 3px double #ffff00;
     padding: 24px;
@@ -159,12 +198,12 @@
   .fortune-card.show { display: block; }
   .fortune-title {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: #ffff00;
     text-align: center;
     text-shadow: 0 0 8px #ffff00;
     margin-bottom: 20px;
-    line-height: 1.8;
+    line-height: 2;
   }
   .fortune-section {
     margin-bottom: 16px;
@@ -194,6 +233,7 @@
     border-top: 1px dashed #003300;
     padding-top: 10px;
     line-height: 1.6;
+    white-space: pre-line;
   }
   .fortune-course-info-label {
     font-family: 'Press Start 2P', monospace;
@@ -202,13 +242,30 @@
     display: block;
     margin-bottom: 4px;
   }
+
+  /* EMAIL BLOCK */
   .email-block { border: 2px solid #00cc33; padding: 20px; display: none; }
   .email-block.show { display: block; }
   .email-label {
     font-family: 'Press Start 2P', monospace;
     font-size: 9px;
     color: #00ff41;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    line-height: 1.8;
+  }
+  .email-quote {
+    font-size: 17px;
+    color: #00aa44;
+    font-style: italic;
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+  .email-quote-attr { font-size: 14px; color: #555; margin-bottom: 14px; }
+  .email-cta {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #ffff00;
+    margin-bottom: 14px;
     line-height: 1.8;
   }
   .email-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -236,6 +293,7 @@
   }
   .send-btn:hover { background: #00ff41; color: #000; }
   .email-note { font-size: 15px; color: #555; margin-top: 10px; }
+
   .reset-btn {
     font-family: 'Press Start 2P', monospace;
     font-size: 9px;
@@ -254,22 +312,23 @@
 </head>
 <body>
 <div class="container">
+
   <div class="title-block">
-    <div class="game-title">PROSPERO'S ORACLE</div>
-    <div class="subtitle">◈ Throw the dice and watch your future unfold! ◈</div>
+    <div class="game-title">GET LIT WITH ENGLISH AT MESA</div>
+    <div class="game-subtitle">Throw the dice and watch your future unfold!!</div>
     <div class="pixel-divider">▓░▓░▓░▓░▓░▓░▓░▓░▓░▓</div>
-    <div class="subtitle" style="font-size:17px; color:#00aa22; margin-top:6px;">
-      "“There is no greater agony than bearing an untold story inside of you.”\n- Zora Neale Hurston
-"<br>
-      Three rolls. One destiny. Your story begins here.
-    </div>
+    <div class="opening-quote">"There is no greater agony than bearing an untold story inside of you."</div>
+    <div class="opening-quote-attr">— Zora Neale Hurston, <em>Dust Tracks on a Road</em> (1942)</div>
   </div>
 
   <div class="phase-block" id="phase1">
     <span class="phase-label">ROLL 1 OF 3</span>
     <div class="phase-question">⚔ Which course calls to you?</div>
     <div class="dice-area">
-      <div class="dice-display" id="dice1">D20</div>
+      <div class="d20-container">
+        <canvas class="d20-canvas" id="canvas1" width="80" height="80"></canvas>
+        <div class="d20-number" id="num1">20</div>
+      </div>
       <div>
         <button class="roll-btn" id="rollBtn1" onclick="rollDice(1)">[ ROLL THE DICE ]<br>► CAST YOUR FATE ◄</button>
         <div class="roll-count" id="rollCount1"></div>
@@ -283,7 +342,10 @@
     <span class="phase-label">ROLL 2 OF 3</span>
     <div class="phase-question">✦ How will this course change you?</div>
     <div class="dice-area">
-      <div class="dice-display" id="dice2">D20</div>
+      <div class="d20-container">
+        <canvas class="d20-canvas" id="canvas2" width="80" height="80"></canvas>
+        <div class="d20-number" id="num2">20</div>
+      </div>
       <div>
         <button class="roll-btn" id="rollBtn2" onclick="rollDice(2)">[ ROLL THE DICE ]<br>► FIND YOUR TRUTH ◄</button>
       </div>
@@ -295,7 +357,10 @@
     <span class="phase-label">ROLL 3 OF 3</span>
     <div class="phase-question">✧ How will you change the world?</div>
     <div class="dice-area">
-      <div class="dice-display" id="dice3">D20</div>
+      <div class="d20-container">
+        <canvas class="d20-canvas" id="canvas3" width="80" height="80"></canvas>
+        <div class="d20-number" id="num3">20</div>
+      </div>
       <div>
         <button class="roll-btn" id="rollBtn3" onclick="rollDice(3)">[ ROLL THE DICE ]<br>► CLAIM YOUR POWER ◄</button>
       </div>
@@ -304,12 +369,15 @@
   </div>
 
   <div class="fortune-card" id="fortuneCard">
-    <div class="fortune-title">✦ ✦ ✦  PROSPERO SPEAKS  ✦ ✦ ✦<br>"We are such stuff as dreams are made on."</div>
+    <div class="fortune-title">✦ ✦ ✦  YOUR FORTUNE IS WRITTEN  ✦ ✦ ✦<br>Get Lit. Get Going. Get There.</div>
     <div id="fortuneSections"></div>
   </div>
 
   <div class="email-block" id="emailBlock">
-    <div class="email-label">► SEND YOUR FORTUNE TO YOUR INBOX ◄<br><span style="color:#555; font-size:13px; font-family:VT323,monospace;">Enter your email and we will dispatch your prophecy.</span></div>
+    <div class="email-label">► SEND YOUR FORTUNE TO YOUR INBOX ◄</div>
+    <div class="email-quote">"Definitions belong to the definers, not the defined."</div>
+    <div class="email-quote-attr">— Toni Morrison, <em>Beloved</em></div>
+    <div class="email-cta">Check your email. Define your future. Define your world.</div>
     <div class="email-row">
       <input class="email-input" type="email" id="emailInput" placeholder="your@email.com" />
       <button class="send-btn" onclick="sendFortune()">[ SEND IT ]</button>
@@ -317,14 +385,161 @@
     <div class="email-note" id="emailNote"></div>
   </div>
 
-  <button class="reset-btn" id="resetBtn" onclick="resetGame()">[ ↺ Discover another path / Click here ]</button>
+  <button class="reset-btn" id="resetBtn" onclick="resetGame()">[ ↺ ROLL AGAIN — ANOTHER STORY AWAITS ]</button>
 </div>
 
 <script>
-function makeIcon(svgContent) {
-  return '<svg class="pixel-icon" width="48" height="48" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;flex-shrink:0;">' + svgContent + '</svg>';
+// ============================================================
+// D20 CANVAS ANIMATION
+// ============================================================
+const D20_COLOR = '#00ff41';
+const D20_STROKE = '#003300';
+const D20_ROLLING_COLOR = '#ff8800';
+
+function drawD20(canvasId, color, rotation) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2;
+  const r = 34;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+
+  // Outer 20-sided polygon approximation using icosahedron face projection
+  const sides = 20;
+  ctx.beginPath();
+  for (let i = 0; i < sides; i++) {
+    const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
+    const x = r * Math.cos(angle);
+    const y = r * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = '#001a00';
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Inner facet lines — classic d20 look
+  const innerR = r * 0.55;
+  const topAngles = [270, 342, 54, 126, 198].map(d => d * Math.PI / 180);
+  const botAngles = [90, 162, 234, 306, 18].map(d => d * Math.PI / 180);
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.5;
+
+  // Top pentagon
+  ctx.beginPath();
+  topAngles.forEach((a, i) => {
+    const x = innerR * Math.cos(a), y = innerR * Math.sin(a);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.stroke();
+
+  // Bottom pentagon
+  ctx.beginPath();
+  botAngles.forEach((a, i) => {
+    const x = innerR * Math.cos(a), y = innerR * Math.sin(a);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.stroke();
+
+  // Lines from outer to inner pentagons
+  for (let i = 0; i < 5; i++) {
+    const outerA = topAngles[i];
+    const outerX = r * Math.cos(outerA), outerY = r * Math.sin(outerA);
+    const innerA = topAngles[i];
+    const innerX = innerR * Math.cos(innerA), innerY = innerR * Math.sin(innerA);
+    ctx.beginPath();
+    ctx.moveTo(outerX, outerY);
+    ctx.lineTo(innerX, innerY);
+    ctx.stroke();
+
+    const outerA2 = botAngles[i];
+    const outerX2 = r * Math.cos(outerA2), outerY2 = r * Math.sin(outerA2);
+    const innerX2 = innerR * Math.cos(outerA2), innerY2 = innerR * Math.sin(outerA2);
+    ctx.beginPath();
+    ctx.moveTo(outerX2, outerY2);
+    ctx.lineTo(innerX2, innerY2);
+    ctx.stroke();
+  }
+
+  // Cross lines between pentagons
+  for (let i = 0; i < 5; i++) {
+    const a1 = topAngles[i];
+    const a2 = botAngles[i];
+    ctx.beginPath();
+    ctx.moveTo(innerR * Math.cos(a1), innerR * Math.sin(a1));
+    ctx.lineTo(innerR * Math.cos(a2), innerR * Math.sin(a2));
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
+// Animate rolling d20
+function animateD20(phase, finalNumber, onDone) {
+  const canvasId = 'canvas' + phase;
+  const numEl = document.getElementById('num' + phase);
+  let frame = 0;
+  const totalFrames = 40;
+  const spinSpeed = 0.35;
+
+  numEl.style.opacity = '0';
+
+  const anim = setInterval(() => {
+    frame++;
+    const rotation = frame * spinSpeed;
+    const flickerNum = Math.floor(Math.random() * 20) + 1;
+    drawD20(canvasId, D20_ROLLING_COLOR, rotation);
+
+    // Flicker random numbers while rolling
+    numEl.style.opacity = '1';
+    numEl.style.color = '#ff8800';
+    numEl.style.textShadow = '0 0 6px #ff8800';
+    numEl.textContent = flickerNum;
+
+    if (frame >= totalFrames) {
+      clearInterval(anim);
+      // Slow down last few frames
+      let slowFrame = 0;
+      const slowAnim = setInterval(() => {
+        slowFrame++;
+        drawD20(canvasId, D20_COLOR, frame * spinSpeed + slowFrame * 0.08);
+        if (slowFrame >= 10) {
+          clearInterval(slowAnim);
+          drawD20(canvasId, D20_COLOR, 0);
+          numEl.textContent = finalNumber;
+          numEl.style.color = '#ffff00';
+          numEl.style.textShadow = '0 0 8px #ffff00';
+          numEl.style.opacity = '1';
+          onDone();
+        }
+      }, 40);
+    }
+  }, 30);
+}
+
+// Draw static d20 on page load
+window.addEventListener('load', () => {
+  [1, 2, 3].forEach(i => drawD20('canvas' + i, D20_COLOR, 0));
+});
+
+// ============================================================
+// PIXEL ART ICONS
+// ============================================================
+function makeIcon(svgContent) {
+  return '<svg width="48" height="48" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;flex-shrink:0;">' + svgContent + '</svg>';
+}
 const icons = {
   speechBubble: makeIcon('<rect x="2" y="3" width="12" height="8" rx="1" fill="#00ff41"/><polygon points="4,11 2,14 7,11" fill="#00ff41"/><rect x="4" y="5" width="2" height="2" fill="#000"/><rect x="7" y="5" width="2" height="2" fill="#000"/><rect x="10" y="5" width="2" height="2" fill="#000"/>'),
   openBook: makeIcon('<rect x="1" y="4" width="6" height="9" fill="#00ff41"/><rect x="9" y="4" width="6" height="9" fill="#00ff41"/><rect x="7" y="4" width="2" height="9" fill="#ffff00"/><rect x="2" y="6" width="4" height="1" fill="#000"/><rect x="2" y="8" width="4" height="1" fill="#000"/><rect x="2" y="10" width="4" height="1" fill="#000"/><rect x="10" y="6" width="4" height="1" fill="#000"/><rect x="10" y="8" width="4" height="1" fill="#000"/><rect x="10" y="10" width="4" height="1" fill="#000"/>'),
@@ -341,7 +556,7 @@ const icons = {
   masks: makeIcon('<ellipse cx="5" cy="8" rx="4" ry="5" fill="#00ff41"/><ellipse cx="11" cy="8" rx="4" ry="5" fill="#ffff00"/><rect x="3" y="7" width="2" height="1" fill="#000"/><rect x="9" y="7" width="2" height="1" fill="#000"/><path d="M3 10 Q5 12 7 10" fill="none" stroke="#000" stroke-width="0.8"/><path d="M9 9 Q11 7 13 9" fill="none" stroke="#000" stroke-width="0.8"/>'),
   magnifier: makeIcon('<circle cx="7" cy="7" r="4" fill="none" stroke="#00ff41" stroke-width="2"/><line x1="10" y1="10" x2="14" y2="14" stroke="#00ff41" stroke-width="2"/>'),
   feather: makeIcon('<path d="M13 1 C13 1 2 6 3 13 L5 11 C5 11 4 8 8 6 L6 10 L8 9 C8 9 6 13 7 14 C8 10 14 2 13 1Z" fill="#00ff41"/>'),
-  pencil: makeIcon('<rect x="6" y="1" width="4" height="11" fill="#ffff00"/><polygon points="6,12 10,12 8,15" fill="#ff8800"/><rect x="6" y="1" width="4" height="2" fill="#888"/><rect x="7" y="3" width="2" height="1" fill="#ff8800"/>'),
+  pencil: makeIcon('<rect x="6" y="1" width="4" height="11" fill="#ffff00"/><polygon points="6,12 10,12 8,15" fill="#ff8800"/><rect x="6" y="1" width="4" height="2" fill="#888"/>'),
   sword: makeIcon('<rect x="7" y="1" width="2" height="10" fill="#00ff41"/><rect x="4" y="8" width="8" height="2" fill="#888"/><polygon points="7,11 9,11 8,15" fill="#ffff00"/><rect x="7" y="1" width="2" height="2" fill="#ffff00"/>'),
   dice: makeIcon('<rect x="2" y="2" width="12" height="12" rx="2" fill="#ff8800"/><rect x="4" y="4" width="2" height="2" fill="#000"/><rect x="10" y="4" width="2" height="2" fill="#000"/><rect x="7" y="7" width="2" height="2" fill="#000"/><rect x="4" y="10" width="2" height="2" fill="#000"/><rect x="10" y="10" width="2" height="2" fill="#000"/>'),
   heart: makeIcon('<polygon points="8,13 2,7 2,5 4,3 6,3 8,5 10,3 12,3 14,5 14,7" fill="#ff4444"/><rect x="7" y="12" width="2" height="2" fill="#ff4444"/>'),
@@ -352,48 +567,49 @@ const icons = {
   brain: makeIcon('<ellipse cx="8" cy="7" rx="5" ry="5" fill="#ff8800"/><rect x="8" y="6" width="1" height="4" fill="#ff4444"/><rect x="5" y="5" width="1" height="3" fill="#ff4444"/><rect x="10" y="5" width="1" height="3" fill="#ff4444"/><rect x="6" y="12" width="4" height="3" fill="#ff8800"/>'),
   paintbrush: makeIcon('<rect x="7" y="1" width="2" height="9" fill="#888"/><polygon points="6,9 10,9 8,13" fill="#00ffcc"/><rect x="6" y="1" width="4" height="2" fill="#ffff00"/>'),
   film: makeIcon('<rect x="1" y="3" width="14" height="10" fill="#333"/><rect x="1" y="3" width="14" height="2" fill="#888"/><rect x="1" y="11" width="14" height="2" fill="#888"/><rect x="2" y="5" width="3" height="6" fill="#00ff41"/><rect x="6" y="5" width="4" height="6" fill="#00ffcc"/><rect x="11" y="5" width="3" height="6" fill="#ffff00"/>'),
-  lightbulb: makeIcon('<circle cx="8" cy="6" r="4" fill="#ffff00"/><rect x="6" y="10" width="4" height="2" fill="#888"/><rect x="7" y="12" width="2" height="2" fill="#ffff00"/><rect x="6" y="6" width="1" height="3" fill="#ff8800"/><rect x="9" y="6" width="1" height="3" fill="#ff8800"/>'),
+  lightbulb: makeIcon('<circle cx="8" cy="6" r="4" fill="#ffff00"/><rect x="6" y="10" width="4" height="2" fill="#888"/><rect x="7" y="12" width="2" height="2" fill="#ffff00"/>'),
   people: makeIcon('<circle cx="5" cy="4" r="2" fill="#00ff41"/><rect x="3" y="6" width="4" height="5" fill="#00ff41"/><circle cx="11" cy="4" r="2" fill="#ffff00"/><rect x="9" y="6" width="4" height="5" fill="#ffff00"/><rect x="6" y="7" width="4" height="4" fill="#00ffcc"/>'),
   megaphone: makeIcon('<rect x="2" y="6" width="4" height="5" fill="#00ff41"/><polygon points="6,5 14,2 14,13 6,11" fill="#00ff41"/><rect x="2" y="11" width="2" height="4" fill="#888"/><rect x="12" y="4" width="2" height="2" fill="#ffff00"/>'),
-  eye: makeIcon('<ellipse cx="8" cy="8" rx="6" ry="4" fill="none" stroke="#00ffcc" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="#00ffcc"/><circle cx="8" cy="8" r="1" fill="#000"/><circle cx="9" cy="7" r="0.5" fill="#fff"/>'),
+  eye: makeIcon('<ellipse cx="8" cy="8" rx="6" ry="4" fill="none" stroke="#00ffcc" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="#00ffcc"/><circle cx="8" cy="8" r="1" fill="#000"/>'),
   torch: makeIcon('<rect x="7" y="7" width="2" height="8" fill="#888"/><rect x="6" y="5" width="4" height="4" fill="#ff8800"/><polygon points="6,5 10,5 8,1" fill="#ffff00"/><rect x="5" y="14" width="6" height="2" fill="#555"/>'),
   star: makeIcon('<polygon points="8,1 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6" fill="#ffff00"/>'),
   journal: makeIcon('<rect x="3" y="2" width="10" height="12" fill="#00cc33"/><rect x="3" y="2" width="2" height="12" fill="#009922"/><rect x="6" y="5" width="5" height="1" fill="#fff" opacity="0.5"/><rect x="6" y="7" width="5" height="1" fill="#fff" opacity="0.5"/><rect x="6" y="9" width="3" height="1" fill="#fff" opacity="0.5"/>'),
   wrench: makeIcon('<rect x="7" y="1" width="3" height="10" fill="#888" transform="rotate(45 8 8)"/><circle cx="4" cy="4" r="2" fill="none" stroke="#888" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="#00ff41"/>'),
   badge: makeIcon('<polygon points="8,1 10,4 14,4 11,7 12,11 8,9 4,11 5,7 2,4 6,4" fill="#ffff00"/><polygon points="8,3 9,5 12,5 10,7 11,10 8,8 5,10 6,7 4,5 7,5" fill="#ff8800"/>'),
   graduate: makeIcon('<rect x="4" y="8" width="8" height="6" fill="#00ff41"/><polygon points="8,2 2,6 8,8 14,6" fill="#ffff00"/><rect x="12" y="6" width="2" height="5" fill="#888"/><rect x="11" y="11" width="3" height="2" fill="#ff4444"/>'),
-  zine: makeIcon('<rect x="2" y="2" width="12" height="12" fill="#ff8800"/><rect x="4" y="4" width="8" height="1" fill="#000"/><rect x="4" y="6" width="8" height="1" fill="#000"/><rect x="4" y="8" width="5" height="1" fill="#000"/><rect x="8" y="10" width="4" height="4" fill="#ffff00"/><rect x="9" y="11" width="2" height="2" fill="#ff8800"/>'),
+  mentor: makeIcon('<circle cx="5" cy="4" r="2" fill="#ffff00"/><rect x="3" y="6" width="4" height="5" fill="#ffff00"/><circle cx="11" cy="6" r="2" fill="#00ff41"/><rect x="9" y="8" width="4" height="5" fill="#00ff41"/><line x1="7" y1="8" x2="9" y2="9" stroke="#fff" stroke-width="1"/>'),
+  zine: makeIcon('<rect x="2" y="2" width="12" height="12" fill="#ff8800"/><rect x="4" y="4" width="8" height="1" fill="#000"/><rect x="4" y="6" width="8" height="1" fill="#000"/><rect x="4" y="8" width="5" height="1" fill="#000"/><rect x="8" y="10" width="4" height="4" fill="#ffff00"/>'),
   viral: makeIcon('<circle cx="8" cy="8" r="2" fill="#ff4444"/><circle cx="3" cy="4" r="1.5" fill="#ff8800"/><circle cx="13" cy="4" r="1.5" fill="#ff8800"/><circle cx="3" cy="12" r="1.5" fill="#ff8800"/><circle cx="13" cy="12" r="1.5" fill="#ff8800"/><line x1="8" y1="8" x2="3" y2="4" stroke="#ff4444" stroke-width="1"/><line x1="8" y1="8" x2="13" y2="4" stroke="#ff4444" stroke-width="1"/><line x1="8" y1="8" x2="3" y2="12" stroke="#ff4444" stroke-width="1"/><line x1="8" y1="8" x2="13" y2="12" stroke="#ff4444" stroke-width="1"/>'),
   filmReel: makeIcon('<circle cx="8" cy="8" r="6" fill="none" stroke="#00ff41" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="#00ff41"/><circle cx="8" cy="3" r="1" fill="#00ff41"/><circle cx="8" cy="13" r="1" fill="#00ff41"/><circle cx="3" cy="8" r="1" fill="#00ff41"/><circle cx="13" cy="8" r="1" fill="#00ff41"/>'),
-  bookClub: makeIcon('<rect x="1" y="5" width="5" height="7" fill="#00ff41"/><rect x="6" y="4" width="5" height="8" fill="#ffff00"/><rect x="11" y="5" width="5" height="7" fill="#00ffcc"/><rect x="2" y="7" width="3" height="1" fill="#000"/><rect x="7" y="6" width="3" height="1" fill="#000"/><rect x="12" y="7" width="3" height="1" fill="#000"/>'),
-  openMic: makeIcon('<rect x="7" y="1" width="2" height="6" rx="1" fill="#00ff41"/><path d="M5 5 Q5 10 8 10 Q11 10 11 5" fill="none" stroke="#00ff41" stroke-width="1.5"/><rect x="7" y="10" width="2" height="3" fill="#00ff41"/><rect x="4" y="13" width="8" height="1" fill="#00ff41"/><circle cx="8" cy="15" r="1" fill="#ffff00"/>'),
-  newspaper: makeIcon('<rect x="1" y="2" width="14" height="12" fill="#00ff41"/><rect x="2" y="3" width="8" height="4" fill="#000"/><rect x="2" y="8" width="12" height="1" fill="#000"/><rect x="2" y="10" width="12" height="1" fill="#000"/><rect x="2" y="12" width="8" height="1" fill="#000"/><rect x="11" y="3" width="3" height="4" fill="#000"/>'),
+  bookClub: makeIcon('<rect x="1" y="5" width="5" height="7" fill="#00ff41"/><rect x="6" y="4" width="5" height="8" fill="#ffff00"/><rect x="11" y="5" width="5" height="7" fill="#00ffcc"/>'),
+  openMic: makeIcon('<rect x="7" y="1" width="2" height="6" rx="1" fill="#00ff41"/><path d="M5 5 Q5 10 8 10 Q11 10 11 5" fill="none" stroke="#00ff41" stroke-width="1.5"/><rect x="7" y="10" width="2" height="3" fill="#00ff41"/><rect x="4" y="13" width="8" height="1" fill="#00ff41"/>'),
+  newspaper: makeIcon('<rect x="1" y="2" width="14" height="12" fill="#00ff41"/><rect x="2" y="3" width="8" height="4" fill="#000"/><rect x="2" y="8" width="12" height="1" fill="#000"/><rect x="2" y="10" width="12" height="1" fill="#000"/><rect x="11" y="3" width="3" height="4" fill="#000"/>'),
   wifi: makeIcon('<path d="M2 9 Q8 3 14 9" fill="none" stroke="#00ff41" stroke-width="1.5"/><path d="M4 11 Q8 6 12 11" fill="none" stroke="#00ff41" stroke-width="1.5"/><path d="M6 13 Q8 10 10 13" fill="none" stroke="#00ff41" stroke-width="1.5"/><circle cx="8" cy="14" r="1.5" fill="#00ff41"/>'),
   award: makeIcon('<circle cx="8" cy="6" r="5" fill="none" stroke="#ffff00" stroke-width="1.5"/><polygon points="8,3 9,5.5 12,5.5 10,7 11,9.5 8,8 5,9.5 6,7 4,5.5 7,5.5" fill="#ffff00"/><rect x="6" y="11" width="4" height="2" fill="#ffff00"/><rect x="4" y="13" width="8" height="2" fill="#888"/>'),
-  mentalHealth: makeIcon('<path d="M8 13 L3 8 Q1 5 4 3 Q6 2 8 5 Q10 2 12 3 Q15 5 13 8 Z" fill="#ff8800"/><rect x="7" y="5" width="2" height="5" fill="#fff" opacity="0.5"/><rect x="5" y="7" width="6" height="2" fill="#fff" opacity="0.5"/>'),
-  documentary: makeIcon('<rect x="1" y="4" width="10" height="8" fill="#333"/><polygon points="11,4 15,8 11,12" fill="#00ff41"/><rect x="2" y="6" width="4" height="4" fill="#00ffcc"/><rect x="7" y="6" width="3" height="2" fill="#888"/><rect x="7" y="9" width="3" height="1" fill="#888"/>'),
-  youngPeople: makeIcon('<circle cx="5" cy="4" r="2" fill="#00ff41"/><rect x="3" y="6" width="4" height="5" fill="#00ff41"/><circle cx="11" cy="5" r="1.5" fill="#ffff00"/><rect x="9" y="7" width="3" height="4" fill="#ffff00"/><rect x="5" y="9" width="7" height="1" fill="#00ffcc"/>'),
+  mentalHealth: makeIcon('<path d="M8 13 L3 8 Q1 5 4 3 Q6 2 8 5 Q10 2 12 3 Q15 5 13 8 Z" fill="#ff8800"/>'),
+  documentary: makeIcon('<rect x="1" y="4" width="10" height="8" fill="#333"/><polygon points="11,4 15,8 11,12" fill="#00ff41"/><rect x="2" y="6" width="4" height="4" fill="#00ffcc"/>'),
+  youngPeople: makeIcon('<circle cx="5" cy="4" r="2" fill="#00ff41"/><rect x="3" y="6" width="4" height="5" fill="#00ff41"/><circle cx="11" cy="5" r="1.5" fill="#ffff00"/><rect x="9" y="7" width="3" height="4" fill="#ffff00"/>'),
   nonprofit: makeIcon('<polygon points="8,1 15,7 15,15 1,15 1,7" fill="none" stroke="#00ff41" stroke-width="1.5"/><rect x="6" y="10" width="4" height="5" fill="#00ff41"/><rect x="3" y="8" width="4" height="4" fill="#00ffcc"/><rect x="9" y="8" width="4" height="4" fill="#ffff00"/>'),
-  mentor: makeIcon('<circle cx="5" cy="4" r="2" fill="#ffff00"/><rect x="3" y="6" width="4" height="5" fill="#ffff00"/><circle cx="11" cy="6" r="2" fill="#00ff41"/><rect x="9" y="8" width="4" height="5" fill="#00ff41"/><line x1="7" y1="8" x2="9" y2="9" stroke="#fff" stroke-width="1"/>'),
   classroomStar: makeIcon('<rect x="1" y="3" width="14" height="10" fill="#333"/><rect x="2" y="4" width="12" height="8" fill="#000"/><polygon points="8,5 9,7.5 12,7.5 10,9 11,11.5 8,10 5,11.5 6,9 4,7.5 7,7.5" fill="#ffff00"/>'),
-  podcast: makeIcon('<circle cx="8" cy="6" r="4" fill="none" stroke="#00ffcc" stroke-width="1.5"/><rect x="7" y="2" width="2" height="4" fill="#00ffcc"/><rect x="5" y="10" width="6" height="2" fill="#00ffcc"/><rect x="4" y="12" width="8" height="1" fill="#888"/><rect x="3" y="13" width="2" height="3" fill="#888"/><rect x="11" y="13" width="2" height="3" fill="#888"/>'),
-  mirror: makeIcon('<rect x="4" y="1" width="8" height="10" rx="1" fill="none" stroke="#00ffcc" stroke-width="1.5"/><rect x="6" y="3" width="4" height="6" fill="#001a22"/><rect x="7" y="11" width="2" height="3" fill="#888"/><rect x="5" y="14" width="6" height="2" fill="#555"/>'),
-  comfort: makeIcon('<path d="M3 8 Q3 4 8 4 Q13 4 13 8 Q13 13 8 14 Q3 13 3 8Z" fill="#00ff41" opacity="0.3"/><rect x="5" y="7" width="6" height="1" fill="#00ff41"/><rect x="6" y="9" width="4" height="1" fill="#00ff41"/><circle cx="8" cy="6" r="1" fill="#ffff00"/>'),
+  podcast: makeIcon('<circle cx="8" cy="6" r="4" fill="none" stroke="#00ffcc" stroke-width="1.5"/><rect x="7" y="2" width="2" height="4" fill="#00ffcc"/><rect x="5" y="10" width="6" height="2" fill="#00ffcc"/><rect x="4" y="12" width="8" height="1" fill="#888"/>'),
+  mirror: makeIcon('<rect x="4" y="1" width="8" height="10" rx="1" fill="none" stroke="#00ffcc" stroke-width="1.5"/><rect x="6" y="3" width="4" height="6" fill="#001a22"/><rect x="7" y="11" width="2" height="3" fill="#888"/>'),
+  comfort: makeIcon('<path d="M3 8 Q3 4 8 4 Q13 4 13 8 Q13 13 8 14 Q3 13 3 8Z" fill="#00ff41" opacity="0.4"/><rect x="5" y="7" width="6" height="1" fill="#00ff41"/><rect x="6" y="9" width="4" height="1" fill="#00ff41"/>'),
   justice: makeIcon('<rect x="7" y="1" width="2" height="3" fill="#888"/><rect x="3" y="4" width="10" height="1" fill="#888"/><rect x="3" y="5" width="4" height="3" fill="#ffff00" opacity="0.8"/><rect x="9" y="5" width="4" height="3" fill="#ffff00" opacity="0.8"/><rect x="7" y="5" width="2" height="9" fill="#888"/><rect x="4" y="13" width="8" height="2" fill="#555"/>'),
   superpower: makeIcon('<polygon points="8,1 10,6 16,6 11,9 13,15 8,11 3,15 5,9 0,6 6,6" fill="#ffff00"/><polygon points="8,3 10,7 14,7 11,9.5 12.5,13 8,10.5 3.5,13 5,9.5 2,7 6,7" fill="#ff8800"/>')
 };
 
 // ============================================================
-// COURSE DATA — edit the "info" field for each course below.
-// This text appears in the final fortune card automatically.
+// COURSE DATA — edit the "info" field for each course.
+// Use \n for line breaks between the four lines:
+// ENGL ### (CRN)\nProfessor Name\nEmail\nDays/Time/Room
 // ============================================================
 const courses = [
   { name: "English 202", title: "Intro to Linguistics", desc: "Unlock the hidden structures of language and how they shape the way we think.", info: "ENGL 202 (42054)\nMariam Kushkaki\nmkushkak@sdccd.edu\nTue/Thur 11:10-12:30 SB221", icon: icons.speechBubble },
-  { name: "English C1002", title: "Introduction to Literature", desc: "From ancient myths to modern masterpieces, discover the stories that define humanity.", info: "ENGL C1002 (41985)\nKim Lacher\nklacher@sdccd.edu\nMon/Wed 11:10-12:35 D106\nor\nENGLC1002 (41986)\nRanmali Rodrigo\nrrodrigo@sdccd.edu\nFully Online", icon: icons.openBook },
+  { name: "English C1002", title: "Introduction to Literature", desc: "From ancient myths to modern masterpieces, discover the stories that define humanity.", info: "ENGL C1002 (41985)\nKim Lacher\nklacher@sdccd.edu\nMon/Wed 11:10-12:35 D106\nor\nENGL C1002 (41986)\nRanmali Rodrigo\nrrodrigo@sdccd.edu\nFully Online", icon: icons.openBook },
   { name: "English 209", title: "Literary Approaches to Film", desc: "Watch movies in a whole new way — analyzing symbolism, storytelling, and cultural impact.", info: "ENGL 209 (41987)\nMariam Kushkaki\nmkushkak@sdccd.edu\nWed 2:20-5:30 SB221", icon: icons.camera },
   { name: "English 210", title: "American Literature I", desc: "Dive into the voices of early America: Wheatley, Occom, Douglass, Hawthorne, Poe, and more.", info: "ENGL 210 (42124)\nKim Lacher\nklacher@sdccd.edu\nFully Online", icon: icons.quill },
-  { name: "English 211", title: "American Literature II", desc: "Explore the evolution of American storytelling with Hurston, Baldwin, Erdrich, Ellison, Zitkala-Sa, and more.", info: "ENGL 211 (42159)\n Jennifer Cost\njcost@sdccd.edu\nTue/Thur 11:10-12:30 G108", icon: icons.lantern },
-  { name: "English 215", title: "English Literature I (800-1799)", desc: "Journey through medieval epics, Renaissance poetry, and Enlightenment philosophy with Chaucer, Milton, Equiano, and more.", info: "ENGL 215 (44377)\nRanmali Rodrigo\nrrodrigo@sdccd.edu\nTue/Thur 9:35-10:55 B101.", icon: icons.castle },
+  { name: "English 211", title: "American Literature II", desc: "Explore the evolution of American storytelling with Hurston, Baldwin, Erdrich, Ellison, Zitkala-Sa, and more.", info: "ENGL 211 (42159)\nJennifer Cost\njcost@sdccd.edu\nTue/Thur 11:10-12:30 G108", icon: icons.lantern },
+  { name: "English 215", title: "English Literature I (800-1799)", desc: "Journey through medieval epics, Renaissance poetry, and Enlightenment philosophy with Chaucer, Milton, Equiano, and more.", info: "ENGL 215 (44377)\nRanmali Rodrigo\nrrodrigo@sdccd.edu\nTue/Thur 9:35-10:55 B101", icon: icons.castle },
   { name: "English 216", title: "English Literature II (1800-Present)", desc: "Trace the shifting landscapes of modern thought through Austen, Wilde, Woolf, Zadie Smith, and more.", info: "ENGL 216 (44378)\nAndrew Hoffman\nahoffman@sdccd.edu\nFully Online", icon: icons.topHat },
   { name: "English 220", title: "Masterpieces of World Literature I", desc: "Read timeless works from across civilizations — from The Epic of Gilgamesh to The Tale of Genji and Sundiata.", info: "ENGL 220 (42118)\nPegah Motaleb\npmotaleb@sdccd.edu\nFully Online", icon: icons.globe },
   { name: "English 221", title: "Masterpieces of World Literature II", desc: "Encounter world-changing voices: Sor Juana, Tagore, Garcia Marquez, Achebe, Arundhati Roy, and more.", info: "Coming Spring 2027!!", icon: icons.compass },
@@ -403,7 +619,7 @@ const courses = [
   { name: "English 240", title: "Shakespeare — STUDY ABROAD 2027", desc: "To take or not to take? Explore the Bard's timeless themes of ambition, betrayal, love, and power. Study abroad in London Summer 2027!", info: "Go here and sign up for info!\ntinyurl.com/MesaLondon", icon: icons.masks },
   { name: "English 245A/B", title: "Writing Creative Nonfiction", desc: "Learn to tell true stories with style, from memoirs to investigative essays.", info: "ENGL 245A/B (41988/41989)\nJorge Villalobos\njvillalobos@sdccd.edu\nFully Online", icon: icons.magnifier },
   { name: "English 247A/B", title: "Writing Seminar: Poetry", desc: "Play with language, rhythm, and metaphor to find your poetic voice.", info: "Coming Spring 2027!!", icon: icons.feather },
-  { name: "English 249A/B", title: "Introduction to Creative Writing", desc: "Craft compelling stories, poems, and personal reflections while experimenting with different genres.", info: "ENGL 249A/B (41990/41991)\nJill Moreno Ikari\njmorenoi@sdccd.edu\nTue 12:45-3:45 C121\nor\nENGL249A/B\n (42082/42083)\nPegah Motaleb\npmotaleb@sdccd.edu\nMon/Wed 11:10-12:35 G109", icon: icons.pencil },
+  { name: "English 249A/B", title: "Introduction to Creative Writing", desc: "Craft compelling stories, poems, and personal reflections while experimenting with different genres.", info: "ENGL 249A/B (41990/41991)\nJill Moreno Ikari\njmorenoi@sdccd.edu\nTue 12:45-3:45 C121\nor\nENGL 249A/B (42082/42083)\nPegah Motaleb\npmotaleb@sdccd.edu\nMon/Wed 11:10-12:35 G109", icon: icons.pencil },
   { name: "English 252A/B", title: "Fundamentals of Fiction Writing", desc: "Learn to build unforgettable characters, immersive worlds, and gripping narratives.", info: "ENGL 252A/B (41992/41993)\nVera Sanchez\nvsanchez@sdccd.edu\nMon/Wed 11:10-12:35 K110A", icon: icons.sword },
   { special: true, text: "Roll twice more! You're taking two courses — expand your horizons!", icon: icons.dice },
   { special: true, text: "Roll twice more! You're taking two courses — challenge yourself!", icon: icons.dice },
@@ -456,28 +672,20 @@ const impacts = [
   { desc: "You realize that writing is your superpower — and you're just getting started.", icon: icons.superpower }
 ];
 
+// ============================================================
+// GAME LOGIC
+// ============================================================
 let state = { courseRolls: [], changeResult: null, impactResult: null, rolling: false };
 
 function rollDice(phase) {
   if (state.rolling) return;
   state.rolling = true;
-  const diceEl = document.getElementById('dice' + phase);
-  const btnEl = document.getElementById('rollBtn' + phase);
-  btnEl.disabled = true;
-  diceEl.classList.add('rolling');
-  let ticks = 0;
-  const interval = setInterval(() => {
-    diceEl.textContent = Math.floor(Math.random() * 20) + 1;
-    ticks++;
-    if (ticks >= 22) {
-      clearInterval(interval);
-      const final = Math.floor(Math.random() * 20) + 1;
-      diceEl.textContent = final;
-      diceEl.classList.remove('rolling');
-      state.rolling = false;
-      handleResult(phase, final);
-    }
-  }, 60);
+  document.getElementById('rollBtn' + phase).disabled = true;
+  const final = Math.floor(Math.random() * 20) + 1;
+  animateD20(phase, final, () => {
+    state.rolling = false;
+    handleResult(phase, final);
+  });
 }
 
 function handleResult(phase, roll) {
@@ -559,6 +767,7 @@ function toggleInfo(id) {
 function unlockPhase(phase) {
   const el = document.getElementById('phase' + phase);
   el.classList.remove('locked');
+  drawD20('canvas' + phase, D20_COLOR, 0);
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -566,7 +775,6 @@ function revealFortune() {
   const card = document.getElementById('fortuneCard');
   const sections = document.getElementById('fortuneSections');
   let html = '';
-
   const realCourses = state.courseRolls.filter(r => !r.course.special);
   realCourses.forEach((r, i) => {
     html += '<div class="fortune-section">';
@@ -578,13 +786,10 @@ function revealFortune() {
     html += '<div class="fortune-course-info"><span class="fortune-course-info-label">► COURSE DETAILS</span>' + r.course.info + '</div>';
     html += '</div></div></div>';
   });
-
   html += '<div class="fortune-section"><div class="fortune-section-label">HOW YOU WILL CHANGE</div>';
   html += '<div class="fortune-inner">' + state.changeResult.icon + '<div class="fortune-section-value">' + state.changeResult.desc + '</div></div></div>';
-
   html += '<div class="fortune-section"><div class="fortune-section-label">HOW YOU WILL CHANGE THE WORLD</div>';
-  html += '<div class="fortune-inner">' + state.impactResult.icon + '<div class="fortune-section-value">' + state.impactResult.desc + '</div></div>';
-
+  html += '<div class="fortune-inner">' + state.impactResult.icon + '<div class="fortune-section-value">' + state.impactResult.desc + '</div></div></div>';
   sections.innerHTML = html;
   card.classList.add('show');
   document.getElementById('emailBlock').classList.add('show');
@@ -600,36 +805,27 @@ async function sendFortune() {
     note.textContent = '► Please enter a valid email address.';
     return;
   }
-
   const realCourses = state.courseRolls.filter(r => !r.course.special);
-  const courseLines = realCourses.map(r => r.course.name + ': ' + r.course.title + ' — ' + r.course.desc + ' | Details: ' + r.course.info).join('\n');
-  const changeLine = state.changeResult ? state.changeResult.desc : '';
-  const impactLine = state.impactResult ? state.impactResult.desc : '';
-
-  const message =
-    'YOUR COURSE(S):\n' + courseLines +
-    '\n\nHOW YOU WILL CHANGE:\n' + changeLine +
-    '\n\nHOW YOU WILL CHANGE THE WORLD:\n' + impactLine;
-
+  const courseLines = realCourses.map(r => r.course.name + ': ' + r.course.title + '\n' + r.course.desc + '\n' + r.course.info).join('\n\n');
+  const message = 'YOUR COURSE(S):\n' + courseLines +
+    '\n\nHOW YOU WILL CHANGE:\n' + (state.changeResult ? state.changeResult.desc : '') +
+    '\n\nHOW YOU WILL CHANGE THE WORLD:\n' + (state.impactResult ? state.impactResult.desc : '');
   note.style.color = '#ffff00';
-  note.textContent = '► Dispatching Ariel...';
+  note.textContent = '► Sending your fortune...';
   document.querySelector('.send-btn').disabled = true;
-
   try {
     const response = await fetch('https://formspree.io/f/xgoqdzqa', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ email: email, message: message, _replyto: email, _subject: "Prospero's Oracle — Your Academic Fortune" })
+      body: JSON.stringify({ email, message, _replyto: email, _subject: 'Get Lit with English at Mesa — Your Fortune' })
     });
     if (response.ok) {
       note.style.color = '#00ff41';
-      note.textContent = '► "Definitions belong to the definers, not the defined." -Toni Morrison Check your email, define your future, define your world! ✦';
-    } else {
-      throw new Error('Failed');
-    }
+      note.textContent = '► Fortune sent! Check your inbox and define your world. ✦';
+    } else { throw new Error(); }
   } catch (e) {
     note.style.color = '#ff4444';
-    note.textContent = '► The spirits are restless. Please try again.';
+    note.textContent = '► Something went wrong. Please try again.';
     document.querySelector('.send-btn').disabled = false;
   }
 }
@@ -637,7 +833,10 @@ async function sendFortune() {
 function resetGame() {
   state = { courseRolls: [], changeResult: null, impactResult: null, rolling: false };
   [1, 2, 3].forEach(i => {
-    document.getElementById('dice' + i).textContent = 'D20';
+    document.getElementById('num' + i).textContent = '20';
+    document.getElementById('num' + i).style.color = '#ffff00';
+    document.getElementById('num' + i).style.textShadow = '0 0 6px #ffff00';
+    drawD20('canvas' + i, D20_COLOR, 0);
     document.getElementById('result' + i).classList.remove('show');
     document.getElementById('result' + i).innerHTML = '';
     document.getElementById('rollBtn' + i).disabled = false;
